@@ -321,6 +321,8 @@ $(function () {
                 confirmButtonText: 'Ok'
             })
         }
+
+        INPUT_RELATED.val('');
     })
 
     function addNodes() {

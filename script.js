@@ -34,6 +34,8 @@ $(function () {
 
     var started = false;
 
+    var nodes_count = 0;
+
 
 
     async function fetchPokes() {
@@ -249,8 +251,13 @@ $(function () {
                         }
                         return 0;
                     });
+
+                    var hasItem = [];
                     response.forEach(element => {
-                        RELATED_LIST.append(`<option value="${element.title}"></option>`)
+                        if (!hasItem.includes(element.title)) {
+                            RELATED_LIST.append(`<option value="${element.title}"></option>`)
+                            hasItem.push(element.title);
+                        }
                     });
 
                     if (!started) {
@@ -276,43 +283,55 @@ $(function () {
         })
 
         if (related.length > 0) {
-            cy.add([
-                { group: 'nodes', data: { id: related[0].title } },
-                { group: 'edges', data: { id: related[0].title + '-node', source: related[0].title, target: actualRelated.title } }
-            ]);
-            await getRelated(related[0].link);
-            actualRelated = related[0];
-            cy.fit();
-            var layout = cy.elements().layout({
-                name: 'random',
-                avoidOverlap: true,
-                fit: true, // whether to fit to viewport
-                padding: 30, // fit padding
-                boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-                animate: false, // whether to transition the node positions
-                animationDuration: 500, // duration of animation in ms if enabled
-                animationEasing: undefined, // easing of animation if enabled
-                animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
-                ready: undefined, // callback on layoutready
-                stop: undefined, // callback on layoutstop
-                transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts 
-            });
-            layout.run();
 
+            if (!cy.getElementById(related[0].title).isNode()) {
 
-            if (cy.getElementById(selectedLast.title + '-node').isEdge()) {
-                Swal.fire({
-                    title: `Você Conseguiu!`,
-                    icon: 'success',
-                    confirmButtonText: 'Novo Jogo'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
+                if (actualRelated.title != selectedFirst.title) {
+                    cy.nodes(`[id = "${actualRelated.title}"]`).style('background-color', '');
+                }
+
+                cy.add([
+                    { group: 'nodes', data: { id: related[0].title } },
+                    { group: 'edges', data: { id: related[0].title + '-node', source: related[0].title, target: actualRelated.title } }
+                ]);
+
+                await getRelated(related[0].link);
+
+                actualRelated = related[0];
+
+                cy.nodes(`[id = "${actualRelated.title}"]`).style('background-color', '#ff7600');
+                cy.fit();
+
+                nodes_count++;
+
+                var layout = cy.elements().layout({
+                    name: 'random',
+                    avoidOverlap: true,
+                    fit: true, // whether to fit to viewport
+                    padding: 30, // fit padding
+                    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+                    animate: false, // whether to transition the node positions
+                    animationDuration: 500, // duration of animation in ms if enabled
+                    animationEasing: undefined, // easing of animation if enabled
+                    animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+                    ready: undefined, // callback on layoutready
+                    stop: undefined, // callback on layoutstop
+                    transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts 
                 });
+
+                layout.run();
+
+                if (cy.getElementById(selectedLast.title + '-node').isEdge()) {
+                    winGame()
+                }
+
+            } else {
+                Swal.fire({
+                    title: `Este relacionamento já existe!`,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                })
             }
-
-
 
         } else {
             Swal.fire({
@@ -322,11 +341,31 @@ $(function () {
             })
         }
 
+
+        var matched = currentRelated.filter(element => {
+            if (element.title == selectedLast.title) {
+
+                console.log(element.title, selectedLast.title, actualRelated.title)
+                cy.add([
+                    { group: 'edges', data: { id: selectedLast.title + '-node', source: selectedLast.title, target: actualRelated.title } }
+                ]);
+                winGame();
+
+            }
+        })
+        console.log(currentRelated);
+
+
         INPUT_RELATED.val('');
     })
 
-    function addNodes() {
-
+    function winGame() {
+        INPUT_RELATED.hide();
+        RELATED_BUTTON.hide();
+        $('.victory').html(`<p>Parabéns</p>Você utilizou apenas ${nodes_count} artigos para relacionar 
+        <span style="color: #26977f;font-weight: 900;" class="text-bold">${selectedFirst.title}</span> a <span
+        style="color:#221761;font-weight: 900;"
+        >${selectedLast.title}</span>`);
     }
 
     function setNodes() {
@@ -361,6 +400,11 @@ $(function () {
             }
         });
         started = true;
+
+        cy.nodes(`[id = "${selectedFirst.title}"]`).style('background-color', '#26977f');
+        cy.nodes(`[id = "${selectedLast.title}"]`).style('background-color', '#221761');
+
+
 
     }
 

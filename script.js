@@ -366,6 +366,7 @@ $(function () {
         <span style="color: #26977f;font-weight: 900;" class="text-bold">${selectedFirst.title}</span> a <span
         style="color:#221761;font-weight: 900;"
         >${selectedLast.title}</span>`);
+        $('#payDev').show();
     }
 
     function setNodes() {

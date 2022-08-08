@@ -224,6 +224,9 @@ $(function () {
                 START_BUTTON.text('Carregando..');
                 START_BUTTON.addClass('bg-gradient-secondary');
                 START_BUTTON.removeClass('bg-gradient-warning');
+                $('#wiki').empty();
+                $('#loading').show();
+                $('#wiki').hide();
             },
             success: function (response) {
                 START_BUTTON.text('Iniciar');
@@ -236,6 +239,11 @@ $(function () {
                         confirmButtonText: 'Ok'
                     })
                 } else {
+                    $('#loading').hide();
+                    $('#wiki').show();
+                    console.log(response);
+                    $('#wiki').html(response[response.length - 1].html);
+                    cleanWiki();
                     SELECT_CONTENT.hide(300);
                     GAME_CONTENT.show(300);
                     FIRST_ARTICLE_TEXT.text(selectedFirst.title);
@@ -254,6 +262,12 @@ $(function () {
 
                     var hasItem = [];
                     response.forEach(element => {
+                        if (element.title == selectedLast.title) {
+                            cy.add([
+                                { group: 'edges', data: { id: selectedLast.title + '-node', source: selectedLast.title, target: actualRelated.title } }
+                            ]);
+                            winGame();
+                        }
                         if (!hasItem.includes(element.title)) {
                             RELATED_LIST.append(`<option value="${element.title}"></option>`)
                             hasItem.push(element.title);
@@ -272,10 +286,32 @@ $(function () {
 
     }
 
+    function cleanWiki() {
+        $('.mw-editsection').remove();
+        $('.reference').remove();
+        $('#wiki').find('img').remove();
+        $('#p-lang-btn').remove();
+        $('.vector-article-toolbar').remove();
+        $('#siteNotice').remove();
+        $('#vector-toc-collapsed-button').remove();
+    }
+
+    $(document).on('click', 'a', async function (element) {
+        element.preventDefault();
+        await guess($(this).text());
+    });
 
     RELATED_BUTTON.on('click', async function () {
         var input = INPUT_RELATED.val();
 
+        await guess(input);
+        console.log(currentRelated);
+
+
+        INPUT_RELATED.val('');
+    })
+
+    async function guess(input) {
         related = currentRelated.filter(element => {
             if (element.title == input) {
                 return element;
@@ -284,53 +320,60 @@ $(function () {
 
         if (related.length > 0) {
 
+            console.log(actualRelated);
+            console.log(selectedFirst);
+            console.log(related[0]);
+
+            if (actualRelated.title != selectedFirst.title) {
+                cy.nodes(`[id = "${actualRelated.title}"]`).style('background-color', '');
+            }
+
+            cy.add([
+                { group: 'nodes', data: { id: related[0].title } },
+                { group: 'edges', data: { id: related[0].title + '-node', source: related[0].title, target: actualRelated.title } }
+            ]);
+
+            await getRelated(related[0].link);
+
+            actualRelated = related[0];
+
+            cy.nodes(`[id = "${actualRelated.title}"]`).style('background-color', '#ff7600');
+            cy.fit();
+
+            nodes_count++;
+
+            var layout = cy.elements().layout({
+                name: 'random',
+                avoidOverlap: true,
+                fit: true, // whether to fit to viewport
+                padding: 30, // fit padding
+                boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+                animate: false, // whether to transition the node positions
+                animationDuration: 500, // duration of animation in ms if enabled
+                animationEasing: undefined, // easing of animation if enabled
+                animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+                ready: undefined, // callback on layoutready
+                stop: undefined, // callback on layoutstop
+                transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts 
+            });
+
+            layout.run();
+
+            // if (cy.getElementById(selectedLast.title + '-node').isEdge()) {
+            //     console.log(selectedLast.title);
+            //     winGame()
+            // }
+            currentRelated.filter(element => {
+                console.log(element.title)
+                console.log(selectedLast.title);
+
+            })
+
             if (!cy.getElementById(related[0].title).isNode()) {
 
-                if (actualRelated.title != selectedFirst.title) {
-                    cy.nodes(`[id = "${actualRelated.title}"]`).style('background-color', '');
-                }
-
-                cy.add([
-                    { group: 'nodes', data: { id: related[0].title } },
-                    { group: 'edges', data: { id: related[0].title + '-node', source: related[0].title, target: actualRelated.title } }
-                ]);
-
-                await getRelated(related[0].link);
-
-                actualRelated = related[0];
-
-                cy.nodes(`[id = "${actualRelated.title}"]`).style('background-color', '#ff7600');
-                cy.fit();
-
-                nodes_count++;
-
-                var layout = cy.elements().layout({
-                    name: 'random',
-                    avoidOverlap: true,
-                    fit: true, // whether to fit to viewport
-                    padding: 30, // fit padding
-                    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-                    animate: false, // whether to transition the node positions
-                    animationDuration: 500, // duration of animation in ms if enabled
-                    animationEasing: undefined, // easing of animation if enabled
-                    animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
-                    ready: undefined, // callback on layoutready
-                    stop: undefined, // callback on layoutstop
-                    transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts 
-                });
-
-                layout.run();
-
-                if (cy.getElementById(selectedLast.title + '-node').isEdge()) {
-                    winGame()
-                }
 
             } else {
-                Swal.fire({
-                    title: `Este relacionamento já existe!`,
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                })
+
             }
 
         } else {
@@ -342,22 +385,15 @@ $(function () {
         }
 
 
-        var matched = currentRelated.filter(element => {
-            if (element.title == selectedLast.title) {
-
-                console.log(element.title, selectedLast.title, actualRelated.title)
-                cy.add([
-                    { group: 'edges', data: { id: selectedLast.title + '-node', source: selectedLast.title, target: actualRelated.title } }
-                ]);
-                winGame();
-
-            }
-        })
-        console.log(currentRelated);
-
-
-        INPUT_RELATED.val('');
-    })
+        // currentRelated.filter(element => {
+        //     if (element.title == selectedLast.title) {
+        //         cy.add([
+        //             { group: 'edges', data: { id: selectedLast.title + '-node', source: selectedLast.title, target: actualRelated.title } }
+        //         ]);
+        //         winGame();
+        //     }
+        // })
+    }
 
     function winGame() {
         INPUT_RELATED.hide();

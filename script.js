@@ -1,6 +1,7 @@
 $(function () {
 
     var FIRST_ARTICLE = $("#inputFirst");
+    
     var LAST_ARTICLE = $('#inputLast');
     var FIRST_LIST = $('#firstList');
     var LAST_LIST = $('#lastList')

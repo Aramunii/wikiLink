@@ -40,7 +40,7 @@ $(function () {
 
     async function fetchPokes() {
         $.ajax({
-            url: 'https://guess-songg.herokuapp.com/',
+            url: 'https://candy-ultra-wednesday.glitch.me/',
             method: 'get',
             dataType: 'json',
             beforeSend: function () {
@@ -57,7 +57,7 @@ $(function () {
     FIRST_ARTICLE.on('input', function () {
         search = encodeURI($(this).val());
         $.ajax({
-            url: 'https://guess-songg.herokuapp.com/search?q=' + search,
+            url: 'https://candy-ultra-wednesday.glitch.me/search?q=' + search,
             method: 'get',
             dataType: 'json',
             beforeSend: function () {
@@ -94,7 +94,7 @@ $(function () {
     LAST_ARTICLE.on('input', function () {
         search = encodeURI($(this).val());
         $.ajax({
-            url: 'https://guess-songg.herokuapp.com/search?q=' + search,
+            url: 'https://candy-ultra-wednesday.glitch.me/search?q=' + search,
             method: 'get',
             dataType: 'json',
             beforeSend: function () {
@@ -131,7 +131,7 @@ $(function () {
 
     FIRST_RANDOM.on('click', function () {
         $.ajax({
-            url: 'https://guess-songg.herokuapp.com/random',
+            url: 'https://candy-ultra-wednesday.glitch.me/random',
             method: 'get',
             dataType: 'json',
             beforeSend: function () {
@@ -156,7 +156,7 @@ $(function () {
 
     LAST_RANDOM.on('click', function () {
         $.ajax({
-            url: 'https://guess-songg.herokuapp.com/random',
+            url: 'https://candy-ultra-wednesday.glitch.me/random',
             method: 'get',
             dataType: 'json',
             beforeSend: function () {
@@ -217,7 +217,7 @@ $(function () {
 
         url = url.replace('https://pt.wikipedia.org', '');
         $.ajax({
-            url: 'https://guess-songg.herokuapp.com/related/?url=' + url,
+            url: 'https://candy-ultra-wednesday.glitch.me/related/?url=' + url,
             method: 'get',
             dataType: 'json',
             beforeSend: function () {

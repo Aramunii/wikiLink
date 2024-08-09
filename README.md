@@ -20,12 +20,12 @@
 ## Screenshots
 
 ### Game Interface
-![WikiConnect Interface](https://imgur.com/hk14iMm)
+![WikiConnect Interface](https://i.imgur.com/hk14iMm.png)
 
 The first screenshot shows the game’s starting interface where you can choose your starting and ending articles, either manually or randomly.
 
 ### In-Game Example
-![WikiConnect In-Game](https://imgur.com/4K3ym84)
+![WikiConnect In-Game](https://i.imgur.com/4K3ym84.png)
 
 The second screenshot demonstrates the game in progress, where the player is attempting to connect "Cristina Fontes Lima" to "Raimond van der Gouw" by navigating through related articles.
 

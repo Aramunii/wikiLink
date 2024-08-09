@@ -14,7 +14,6 @@
 ## Features
 - **Random Article Selection:** If you want an extra challenge, you can opt for the random selection of both starting and ending articles.
 - **Live Visualization:** The game provides a visual representation of the nodes you've created, helping you track your path and strategize your next moves.
-- **Responsive Design:** The game is designed to be responsive and user-friendly, ensuring a smooth experience across different devices.
 
 ## Screenshots
 

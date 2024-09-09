@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>WikiConnect</title>
+    <title>WikiConnect - Explore Conexões</title>
     <script src="./sweet.js"></script>
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -34,6 +34,41 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #cy {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-group-text {
+            border-radius: 25px 0 0 25px;
+        }
+
+        .form-control {
+            border-radius: 0 25px 25px 0;
+        }
+
         .text-default {
             color: black;
         }
@@ -65,6 +100,101 @@
             height: 300px;
             display: block;
         }
+
+        select.form-select {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.selected-article {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-group .form-control {
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.random-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 0.25rem 0.25rem 0;
+    padding: 0.375rem 0.75rem;
+    z-index: 5;
+}
+
+.random-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.selected-article {
+    background-color: #e8f0fe;
+    border-left: 4px solid #4285f4;
+}
+
+.selected-article small {
+    display: block;
+    color: #666;
+    font-size: 0.8em;
+}
+
+.selected-article .article-name {
+    font-weight: bold;
+    color: #4285f4;
+}
+
+.selected-article::before {
+    content: '✓';
+    color: #4285f4;
+    margin-right: 5px;
+}
+
+.card-header .btn-group .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    margin-left: 0.25rem;
+}
+
+.card-header .btn-group .btn i {
+    font-size: 1rem;
+}
+
+@media (max-width: 576px) {
+    .card-header h4 {
+        font-size: 1.25rem;
+    }
+    
+    .card-header .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .card-header .btn-group .btn i {
+        font-size: 0.875rem;
+    }
+}
     </style>
 
 </head>
@@ -80,132 +210,96 @@
             <div class="col-xl-10 col-lg-12 col-md-9">
                 <div id="selectMenu" style="display: block;">
                     <div class="card o-hidden border-0 shadow-lg my-5">
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary text-center">WikiConnect ---</h6>
-                            <button id="newGame" class="btn btn-primary pull-left">Novo Jogo</button>
+                        <div class="card-header bg-primary text-white py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="m-0 font-weight-bold">WikiConnect</h4>
+                                <div class="btn-group">
+                                    <button id="howToPlayBtn" class="btn btn-light btn-sm" title="Como Jogar">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                    <button id="newGame" class="btn btn-light btn-sm" title="Novo Jogo">
+                                        <i class="fas fa-redo-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body p-0">
-                            <!-- Nested Row within Card Body -->
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="p-4">
-                                        <div class="row mb-10">
+                        <div class="card-body p-4">
+                            <div id="select-content">
+                                <h2 class="text-center mb-4">Descubra Conexões Surpreendentes!</h2>
+                                <p class="text-center mb-4">Relacione artigos da Wikipedia com o menor número de tentativas. Escolha seu ponto de partida e chegada, ou deixe o acaso decidir!</p>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-success text-white">Início</span>
+                                            <input type="text" id="inputFirst" class="form-control" placeholder="Digite o artigo inicial">
+                                            <button id="firstRandom" class="btn btn-outline-primary random-btn">
+                                                <i class="fas fa-random"></i>
+                                            </button>
                                         </div>
-                                        <div class="row mb-10 mt-10" style="display: block;">
-                                            <div class="col-md-12 center">
-                                                <h5><span id="timeUpdate"></span></h5>
-                                            </div>
+                                        <div id="firstList"></div> <!-- Adicione esta linha -->
 
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-danger text-white">Fim</span>
+                                            <input type="text" id="inputLast" class="form-control" placeholder="Digite o artigo final">
+                                            <button id="lastRandom" class="btn btn-outline-primary random-btn">
+                                                <i class="fas fa-random"></i>
+                                            </button>
                                         </div>
-                                        <div id="select-content" style="display: block;">
-                                            <div class="col-md-12 text-center">
-                                                <h5 id="result">Relacione os artigos do wikipedia com o menor numero de
-                                                    tentativas</h5>
-                                            </div>
-                                            <h6 class="text-center">Escolha onde quer começar e onde quer terminar ou
-                                                deixe
-                                                a sorte lhe guiar.</h6>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top: 20px;">
-                                                        <input class="form-control form-control-user" value=""
-                                                            list="firstList" id="inputFirst" type="text" name="first"
-                                                            placeholder="Começe por aqui" autocomplete="on">
-                                                        <datalist id="firstList"></datalist>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group" style="margin-top: 20px;">
-                                                        <button id="firstRandom" style="display: block;"
-                                                            class="btn btn-gradient-warning text-white bg-gradient-warning btn-user btn-block">Aleatório</button>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group" style="margin-top: 20px;">
-                                                        <input class="form-control form-control-user" value=""
-                                                            list="lastList" id="inputLast" type="text" name="pokemon"
-                                                            placeholder="Termine aqui" autocomplete="on">
-                                                        <datalist id="lastList"></datalist>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group" style="margin-top: 20px;">
-                                                        <button id="lastRandom" style="display: block;"
-                                                            class="btn btn-gradient-warning text-white bg-gradient-warning btn-user btn-block">Aleatório</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-10" id="resume-content" style="display: none;">
-                                                <div class="col-md-6">
-                                                    <p>Resumo do artigo:</p>
-                                                    <p>
-                                                        <span id="first-resume">
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p>Resumo do artigo:</p>
-                                                    <p>
-                                                        <span id="last-resume">
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <button id="startButton" style="display: block;"
-                                                        class="btn btn-gradient-success text-white bg-gradient-success btn-user btn-block">Iniciar</button>
-                                                </div>
-                                            </div>
+                                        <div id="lastList"></div> <!-- Adicione esta linha -->
+
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button id="startButton" class="btn btn-success btn-lg">
+                                        <i class="fas fa-play mr-2"></i>Iniciar Jornada
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="game-content" style="display: none;">
+                                <div class="col-md-12 text-center">
+                                    <h5>Você consegue relacionar <span
+                                            style="color: #26977f;font-weight: 900;" id="first_article"
+                                            class="text-bold"></span> a <span
+                                            style="color:#221761;font-weight: 900;"
+                                            id="last_article"></span> ?
+                                    </h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div id="cy" class="bg-gray-300">
                                         </div>
-                                        <div id="game-content" style="display: none;">
-                                            <div class="col-md-12 text-center">
-                                                <h5>Você consegue relacionar <span
-                                                        style="color: #26977f;font-weight: 900;" id="first_article"
-                                                        class="text-bold"></span> a <span
-                                                        style="color:#221761;font-weight: 900;"
-                                                        id="last_article"></span> ?
-                                                </h5>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div id="cy" class="bg-gray-300">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921"
-                                                        id="loading" style="display: block;" width="450">
-                                                    <div class="" id="wiki" style="padding: 19px;overflow: scroll;max-width: 50p;max-height: 300px;
-                                                        min-height: 300px;">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="victory col-md-12 text-center">
-                                                </div>
-                                                <div class="col-md-10">
-                                                    <div class="form-group" style="margin-top: 20px;">
-                                                        <input class="form-control form-control-user" value=""
-                                                            list="relatedList" id="inputRelated" type="text"
-                                                            name="first" placeholder="Digite alguma coisa"
-                                                            autocomplete="on">
-                                                        <datalist id="relatedList"></datalist>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group" style="margin-top: 20px;">
-                                                        <button id="relatedButton" style="display: block;"
-                                                            class="btn btn-gradient-warning text-white bg-gradient-warning btn-user btn-block">Relacionar</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921"
+                                            id="loading" style="display: block;" width="450">
+                                        <div class="" id="wiki" style="padding: 19px;overflow: scroll;max-width: 50p;max-height: 300px;
+                                            min-height: 300px;">
                                         </div>
                                     </div>
                                 </div>
-                                <a id="payDev" style="display: none;"
-                                    href="https://nubank.com.br/pagar/56hu3/lHYlQvDAmm"
-                                    class="btn btn-gradient-primary text-white bg-gradient-primary btn-user btn-block">Ajudar
-                                    o desenvolvedor</a>
+                                <div class="row">
+                                    <div class="victory col-md-12 text-center">
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="form-group" style="margin-top: 20px;">
+                                            <input class="form-control form-control-user" value=""
+                                                list="relatedList" id="inputRelated" type="text"
+                                                name="first" placeholder="Digite alguma coisa"
+                                                autocomplete="on">
+                                            <datalist id="relatedList"></datalist>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group" style="margin-top: 20px;">
+                                            <button id="relatedButton" style="display: block;"
+                                                class="btn btn-gradient-warning text-white bg-gradient-warning btn-user btn-block">Relacionar</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -235,7 +329,34 @@
 
     </div>
 
+    <div class="modal fade" id="howToPlayModal" tabindex="-1" aria-labelledby="howToPlayModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="howToPlayModalLabel">Como Jogar WikiConnect</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">x</button>
+            </div>
+            <div class="modal-body">
+              <ol>
+                <li>Escolha um artigo inicial e um artigo final da Wikipedia, ou use a opção "Aleatório".</li>
+                <li>Clique em "Iniciar Jornada" para começar o jogo.</li>
+                <li>Seu objetivo é conectar o artigo inicial ao final usando o menor número possível de links entre artigos.</li>
+                <li>A cada turno, escolha um link no artigo atual para avançar.</li>
+                <li>Continue navegando pelos artigos até chegar ao artigo final.</li>
+                <li>O jogo termina quando você alcança o artigo final ou desiste.</li>
+                <li>Tente completar o desafio no menor número de passos possível!</li>
+              </ol>
+              <p>Dica: Use seu conhecimento e intuição para encontrar conexões entre os temas dos artigos.</p>
+            </div>
+            <div class="modal-footer">
+              <button id="closeModalBtn" type="button" class="btn btn-primary" data-bs-dismiss="moda">Entendi!</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

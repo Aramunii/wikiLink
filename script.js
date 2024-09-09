@@ -72,19 +72,30 @@ $(function () {
                 FIRST_RANDOM.addClass('bg-gradient-warning');
                 FIRST_RANDOM.removeClass('bg-gradient-secondary');
                 console.log(response);
-                FIRST_LIST.empty();
+                
+                // Create buttons for the first 4 results
+                var buttonContainer = $('<div>').addClass('button-container mt-2');
+                response.slice(0, 4).forEach(option => {
+                    var button = $('<button>')
+                        .addClass('btn btn-outline-primary me-2 mb-2')
+                        .text(option.title)
+                        .on('click', function() {
+                            FIRST_ARTICLE.val(option.title);
+                            selectedFirst = option;
+                            updateSelectedArticle('first', option.title);
+                            buttonContainer.remove();
+                        });
+                    buttonContainer.append(button);
+                });
+                
+                // Replace the existing buttons (if any) with new ones
+                $('.button-container').remove();
+                FIRST_LIST.after(buttonContainer);
 
                 firstList = response;
-                response.forEach(option => {
-                    FIRST_LIST.append(`<option value="${option.name}"></option>`)
-                })
-
-                // RESUME_CONTENT.show(200);
-                // FIRST_ARTICLE.val(response.title);
                 FIRST_RESUME.text('');
-                // selectedFirst = response;
             },
-            onerror: function (response) {
+            error: function (response) {
                 FIRST_RANDOM.text('Aleatório');
                 FIRST_RANDOM.addClass('bg-gradient-warning');
                 FIRST_RANDOM.removeClass('bg-gradient-secondary');
@@ -109,19 +120,30 @@ $(function () {
                 LAST_RANDOM.addClass('bg-gradient-warning');
                 LAST_RANDOM.removeClass('bg-gradient-secondary');
                 console.log(response);
-                LAST_LIST.empty();
+                
+                // Create buttons for the first 4 results
+                var buttonContainer = $('<div>').addClass('button-container mt-2');
+                response.slice(0, 4).forEach(option => {
+                    var button = $('<button>')
+                        .addClass('btn btn-outline-primary me-2 mb-2')
+                        .text(option.title)
+                        .on('click', function() {
+                            LAST_ARTICLE.val(option.title);
+                            selectedLast = option;
+                            updateSelectedArticle('last', option.title);
+                            buttonContainer.remove();
+                        });
+                    buttonContainer.append(button);
+                });
+                
+                // Replace the existing buttons (if any) with new ones
+                $('.button-container').remove();
+                LAST_LIST.after(buttonContainer);
 
                 lastList = response;
-                response.forEach(option => {
-                    LAST_LIST.append(`<option value="${option.name}"></option>`)
-                })
-
-                // RESUME_CONTENT.show(200);
-                // FIRST_ARTICLE.val(response.title);
                 LAST_RESUME.text('');
-                // selectedFirst = response;
             },
-            onerror: function (response) {
+            error: function (response) {
                 LAST_RANDOM.text('Aleatório');
                 LAST_RANDOM.addClass('bg-gradient-warning');
                 LAST_RANDOM.removeClass('bg-gradient-secondary');
@@ -447,8 +469,28 @@ $(function () {
 
     }
 
+    function updateSelectedArticle(type, articleName) {
+        var displayElement = type === 'first' ? $('#selectedFirstArticle') : $('#selectedLastArticle');
+        if (!displayElement.length) {
+            displayElement = $('<div>')
+                .attr('id', type === 'first' ? 'selectedFirstArticle' : 'selectedLastArticle')
+                .addClass('selected-article mt-2 p-2 bg-light rounded');
+            (type === 'first' ? FIRST_ARTICLE : LAST_ARTICLE).parent().after(displayElement);
+        }
+        displayElement.text('Artigo selecionado: ' + articleName);
+    }
+
     $('#newGame').on('click', function () {
         window.location.reload();
     })
+    // Modal Como Jogar
+    $('#howToPlayBtn').on('click', function() {
+        $('#howToPlayModal').modal('show');
+    });
+
+    // Fechar o modal
+    $('#closeModalBtn, #howToPlayModal .btn-close').on('click', function() {
+        $('#howToPlayModal').modal('hide');
+    });
 
 })
